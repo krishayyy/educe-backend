@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Educe - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    /* Reset & basics */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+      max-width: 420px;
+      width: 100%;
+      padding: 30px 30px 40px;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: #3b82f6;
+      letter-spacing: 1.2px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-weight: 600;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      margin-top: 14px;
+    }
+    button.primary {
+      background: #3b82f6;
+      color: white;
+    }
+    button.primary:hover {
+      background: #2563eb;
+    }
+    button.grey {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    button.grey:hover {
+      background: #d1d5db;
+    }
+    .back-btn {
+      margin-top: 18px;
+      text-align: center;
+      color: #6b7280;
+      cursor: pointer;
+      font-weight: 600;
+      user-select: none;
+    }
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1.5px solid #d1d5db;
+      font-size: 16px;
+      transition: border-color 0.25s ease;
+      font-weight: 500;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 5px rgba(59,130,246,0.5);
+    }
+    .desc-box {
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 16px;
+      position: relative;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    .close-x {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      color: #6b7280;
+      user-select: none;
+    }
+    .otp-input {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 18px 0;
+    }
+    .otp-input input {
+      width: 44px;
+      height: 56px;
+      font-size: 28px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1.5px solid #d1d5db;
+      font-weight: 600;
+      transition: border-color 0.25s ease;
+    }
+    .otp-input input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 7px rgba(59,130,246,0.6);
+      outline: none;
+    }
+    .status-icon {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 20px;
+      user-select: none;
+    }
+    /* Styles for Google Sign-In button */
+    #g_id_onload, .g_id_signin {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="mainContainer">
+    <!-- Initial Role Selection Section -->
+    <div id="roleSelectionBox">
+      <h2>Sign up as:</h2>
+      <button class="primary" onclick="selectRole('learner')">Learner</button>
+      <button class="primary" onclick="selectRole('mentor')">Mentor</button>
+      <button class="grey" onclick="toggleInfo()">What does that mean?</button>
+    </div>
+
+    <div id="roleInfo" class="desc-box" style="display:none">
+      <span class="close-x" onclick="toggleInfo()">&times;</span>
+      <p><strong>Learner:</strong> A student who wants to improve their skills by attending live tutoring and using resources.</p>
+      <p><strong>Mentor:</strong> An expert or tutor who volunteers to guide and teach learners.</p>
+    </div>
+
+    <!-- AGE -->
+    <div id="ageBox" style="display:none">
+      <h2>Enter Your Birth Month & Year</h2>
+      <select id="birthMonth" aria-label="Birth Month">
+        <option disabled selected>Month</option>
+        <option>January</option>
+        <option>February</option>
+        <option>March</option>
+        <option>April</option>
+        <option>May</option>
+        <option>June</option>
+        <option>July</option>
+        <option>August</option>
+        <option>September</option>
+        <option>October</option>
+        <option>November</option>
+        <option>December</option>
+      </select>
+      <select id="birthYear" aria-label="Birth Year"></select>
+      <button class="primary" onclick="submitAge()">Next</button>
+      <div class="back-btn" onclick="goBackToRole()">Back</div>
+    </div>
+
+    <!-- EMAIL -->
+    <div id="emailBox" style="display:none">
+      <h2 id="emailPrompt">Enter Your Email</h2>
+      <input type="email" id="userEmail" placeholder="Your Email" autocomplete="email" />
+
+      <div id="g_id_onload"
+           data-client_id="441654734790-f5qi7f7obkl5c977uoa34tmuhq2r1k25.apps.googleusercontent.com"
+           data-context="signup"
+           data-ux_mode="popup"
+           data-callback="handleGoogleSignIn"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="pill"
+           data-theme="outline"
+           data-text="sign_up_with"
+           data-size="large"
+           data-logo_alignment="left">
+      </div>
+
+      <button class="primary" onclick="sendOTP()">Use Email</button>
+      <div class="back-btn" onclick="showAgeBox()">Back</div>
+    </div>
+
+    <!-- OTP -->
+    <div id="otpBox" style="display:none">
+      <h2>Enter Confirmation Code</h2>
+      <div class="otp-input">
+        <input maxlength="1" oninput="moveFocus(event,0)" id="otp0" />
+        <input maxlength="1" oninput="moveFocus(event,1)" id="otp1" />
+        <input maxlength="1" oninput="moveFocus(event,2)" id="otp2" />
+        <input maxlength="1" oninput="moveFocus(event,3)" id="otp3" />
+        <input maxlength="1" oninput="moveFocus(event,4)" id="otp4" />
+        <input maxlength="1" oninput="moveFocus(event,5)" id="otp5" />
+      </div>
+      <button class="primary" onclick="verifyOTP()">Confirm</button>
+      <div class="back-btn" onclick="showEmailBox()">Back</div>
+    </div>
+
+    <!-- FINAL SIGNUP -->
+    <div id="finalSignup" style="display:none">
+      <h2>Create Account</h2>
+      <input id="firstName" placeholder="First Name" autocomplete="given-name" />
+      <input id="lastName" placeholder="Last Name" autocomplete="family-name" />
+      <div style="position:relative;">
+        <input id="username" placeholder="Username (3-8 chars)" oninput="checkUsernameAvailability()" autocomplete="username" />
+        <span id="usernameStatus" class="status-icon">❌</span>
+      </div>
+      <input type="password" id="password" placeholder="Password (min 7 chars)" autocomplete="new-password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" autocomplete="new-password" />
+      <button class="primary" onclick="submitSignup()">Create Account</button>
+      <div class="back-btn" onclick="showOTPBox()">Back</div>
+    </div>
+
+    <div style="margin-top:30px; font-size:12px; color:#999; text-align:center;">
+      Founded by Krishay Suresh
+    </div>
+  </div>
+
+  <script>
+    // Determine the API base URL: use Canvas proxy if available, otherwise localhost
+    const API_BASE_URL = typeof __api_base_url !== 'undefined' ? __api_base_url : 'http://localhost:4000';
+    console.log('Using API Base URL:', API_BASE_URL);
+
+    // Populate birthYear select with years dynamically
+    const birthYearSelect = document.getElementById('birthYear');
+    const currentYear = new Date().getFullYear();
+    for(let y = currentYear; y >= 1900; y--) {
+      let opt = document.createElement('option');
+      opt.value = y;
+      opt.innerText = y;
+      birthYearSelect.appendChild(opt);
+    }
+
+    let selectedRole = '';
+    let isGoogleSignup = false;
+    let checkedUsernameAvailable = false;
+
+    // Show only one section at a time
+    function showSection(sectionId) {
+      // List ALL section IDs that are part of the multi-step form flow
+      const sections = ['roleSelectionBox', 'ageBox', 'emailBox', 'otpBox', 'finalSignup', 'roleInfo'];
+      
+      // Hide all sections
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.display = 'none';
+        }
+      });
+
+      // Show the requested section
+      const targetEl = document.getElementById(sectionId);
+      if (targetEl) {
+        targetEl.style.display = 'block';
+      }
+    }
+
+    // Toggle info box for role description
+    function toggleInfo() {
+      const info = document.getElementById('roleInfo');
+      info.style.display = (info.style.display === 'none' || !info.style.display) ? 'block' : 'none';
+    }
+
+    // Reset inputs
+    function resetAllInputs() {
+      const birthMonth = document.getElementById('birthMonth');
+      if (birthMonth) birthMonth.selectedIndex = 0;
+      const birthYear = document.getElementById('birthYear');
+      if (birthYear) birthYear.selectedIndex = 0;
+      const userEmail = document.getElementById('userEmail');
+      if (userEmail) userEmail.value = '';
+      for(let i=0; i<6; i++) {
+        const otpInput = document.getElementById(`otp${i}`);
+        if (otpInput) otpInput.value = '';
+      }
+      const firstName = document.getElementById('firstName');
+      if (firstName) firstName.value = '';
+      const lastName = document.getElementById('lastName');
+      if (lastName) lastName.value = '';
+      const username = document.getElementById('username');
+      if (username) username.value = '';
+      const password = document.getElementById('password');
+      if (password) password.value = '';
+      const confirmPassword = document.getElementById('confirmPassword');
+      if (confirmPassword) confirmPassword.value = '';
+      const usernameStatus = document.getElementById('usernameStatus');
+      if (usernameStatus) usernameStatus.innerText = '❌';
+      checkedUsernameAvailable = false;
+    }
+
+    // Start signup - choose role
+    function selectRole(role) {
+      selectedRole = role;
+      toggleInfo(false); // Ensure info box is hidden when selecting a role
+      showSection('ageBox'); // Show the age input section
+      resetAllInputs();
+    }
+
+    // Go back to role select screen (initial view)
+    function goBackToRole() {
+      selectedRole = '';
+      isGoogleSignup = false;
+      showSection('roleSelectionBox'); // Show the initial role selection box
+      resetAllInputs();
+    }
+
+    // When user submits birthday info
+    function submitAge() {
+      const birthMonth = document.getElementById('birthMonth').value;
+      const birthYear = parseInt(document.getElementById('birthYear').value);
+      if (!birthMonth || birthMonth === "Month" || !birthYear || isNaN(birthYear)) {
+        alert('Please select both birth month and year.');
+        return;
+      }
+      const age = currentYear - birthYear;
+
+      document.getElementById('emailPrompt').innerText = age < 13 ? "Enter Parent's Email" : "Enter Your Email";
+      showSection('emailBox');
+    }
+
+    // Show age input again (back button from email)
+    function showAgeBox() {
+      showSection('ageBox');
+      isGoogleSignup = false;
+    }
+
+    // Show email input again (back button from OTP)
+    function showEmailBox() {
+      showSection('emailBox');
+      isGoogleSignup = false;
+    }
+
+    // Show OTP input
+    function showOTPBox() {
+      showSection('otpBox');
+      isGoogleSignup = false;
+      clearOTPInputs();
+    }
+
+    // Clear OTP inputs and focus first
+    function clearOTPInputs() {
+      for(let i=0; i<6; i++) {
+        const otpInput = document.getElementById(`otp${i}`);
+        if (otpInput) otpInput.value = '';
+      }
+      const otp0 = document.getElementById('otp0');
+      if (otp0) otp0.focus();
+    }
+
+    // Move focus automatically on OTP inputs
+    function moveFocus(e, idx) {
+      if(e.target.value.length === 1 && idx < 5) {
+        const nextInput = document.getElementById(`otp${idx+1}`);
+        if (nextInput) nextInput.focus();
+      }
+      if(e.inputType === 'deleteContentBackward' && idx > 0) {
+        const prevInput = document.getElementById(`otp${idx-1}`);
+        if (prevInput) prevInput.focus();
+      }
+    }
+
+    // Send OTP to entered email
+    async function sendOTP() {
+      const email = document.getElementById('userEmail').value.trim();
+      if (!email) {
+        alert('Please enter an email.');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      try {
+        // Use API_BASE_URL for the fetch request
+        const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email})
+        });
+        if(res.ok) {
+          showOTPBox();
+          alert('OTP sent to your email. Please check your inbox (and spam folder)!');
+        } else {
+          const errorData = await res.json().catch(() => ({ message: 'Failed to send OTP.' }));
+          alert(`Error: ${errorData.message || 'Failed to send OTP. Please try again.'}`);
+        }
+      } catch (error) {
+        console.error('Network error while sending OTP:', error);
+        alert('Network error while sending OTP. Please check your connection.');
+      }
+    }
+
+    // Verify OTP code entered by user
+    async function verifyOTP() {
+      let otp = '';
+      for(let i=0; i<6; i++) {
+        otp += document.getElementById(`otp${i}`).value;
+      }
+      if(otp.length < 6) {
+        alert('Please enter the full 6-digit code.');
+        return;
+      }
+      const email = document.getElementById('userEmail').value.trim();
+      try {
+        // Use API_BASE_URL for the fetch request
+        const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email, otp})
+        });
+        if(res.ok) {
+          showFinalSignup();
+          alert('Email confirmed successfully!');
+        } else {
+          const errorData = await res.json().catch(() => ({ message: 'Invalid OTP.' }));
+          alert(`Error: ${errorData.message || 'Invalid OTP. Please try again.'}`);
+        }
+      } catch (error) {
+        console.error('Network error while verifying OTP:', error);
+        alert('Network error while verifying OTP. Please check your connection.');
+      }
+    }
+
+    // Show final signup form
+    function showFinalSignup() {
+      showSection('finalSignup');
+      isGoogleSignup = false;
+    }
+
+    // Check username availability live
+    let usernameCheckTimeout;
+    async function checkUsernameAvailability() {
+      clearTimeout(usernameCheckTimeout);
+      const username = document.getElementById('username').value.trim();
+      const statusEl = document.getElementById('usernameStatus');
+      checkedUsernameAvailable = false;
+
+      if(username.length < 3 || username.length > 8) {
+        statusEl.innerText = '❌';
+        return;
+      }
+
+      usernameCheckTimeout = setTimeout(async () => {
+        try {
+          // Use API_BASE_URL for the fetch request
+          const res = await fetch(`${API_BASE_URL}/api/check-username?username=${encodeURIComponent(username)}`);
+          if(res.ok) {
+            const data = await res.json();
+            if(data.available) {
+              statusEl.innerText = '✅';
+              checkedUsernameAvailable = true;
+            } else {
+              statusEl.innerText = '❌';
+              checkedUsernameAvailable = false;
+            }
+          } else {
+            statusEl.innerText = '❌';
+            checkedUsernameAvailable = false;
+          }
+        } catch (error) {
+          console.error('Network error checking username:', error);
+          statusEl.innerText = '❌';
+          checkedUsernameAvailable = false;
+        }
+      }, 500);
+    }
+
+    // Submit final signup data
+    async function submitSignup() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if(!firstName || !lastName || !username || (!isGoogleSignup && !password) || (!isGoogleSignup && !confirmPassword)) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+      if(!isGoogleSignup && password.length < 7) {
+        alert('Password must be at least 7 characters.');
+        return;
+      }
+      if(!isGoogleSignup && password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+      if(!checkedUsernameAvailable) {
+        alert('Please ensure your chosen username is valid and available (green checkmark).');
+        return;
+      }
+
+      const signupData = {
+        firstName,
+        lastName,
+        username,
+        password: isGoogleSignup ? null : password,
+        role: selectedRole,
+        birthMonth: document.getElementById('birthMonth').value,
+        birthYear: document.getElementById('birthYear').value,
+        email: document.getElementById('userEmail').value.trim(),
+        isGoogleSignup,
+      };
+
+      try {
+        // Use API_BASE_URL for the fetch request
+        const res = await fetch(`${API_BASE_URL}/api/signup`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(signupData),
+        });
+        if(res.ok) {
+          alert('Account created successfully! Please log in.');
+          // Redirect to login page - adjust path if needed for your project structure
+          window.location.href = '/login'; 
+        } else {
+          const errorData = await res.json().catch(() => ({ message: 'Failed to create account.' }));
+          alert(`Error: ${errorData.message || 'Failed to create account. Please try again.'}`);
+        }
+      } catch (error) {
+        console.error('Network error during signup:', error);
+        alert('Network error during signup. Please check your connection.');
+      }
+    }
+
+    // --- Google Sign-In Handler ---
+    function handleGoogleSignIn(response) {
+      console.log("Google Sign-In token:", response.credential);
+      isGoogleSignup = true;
+      
+      const decodedToken = JSON.parse(atob(response.credential.split('.')[1]));
+      console.log('Decoded Google User Info:', decodedToken);
+      
+      if (decodedToken.email) {
+          document.getElementById('userEmail').value = decodedToken.email;
+          document.getElementById('emailPrompt').innerText = "Email (from Google)";
+          showFinalSignup(); 
+      }
+      if (decodedToken.given_name) {
+          document.getElementById('firstName').value = decodedToken.given_name;
+      }
+      if (decodedToken.family_name) {
+          document.getElementById('lastName').value = decodedToken.family_name;
+      }
+      const passwordInput = document.getElementById('password');
+      if (passwordInput) passwordInput.required = false;
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      if (confirmPasswordInput) confirmPasswordInput.required = false;
+    }
+    // --- END Google Sign-In Handler ---
+
+    // Initial setup: Show the initial role selection box
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('roleSelectionBox');
+    });
+  </script>
+</body>
+</html>
